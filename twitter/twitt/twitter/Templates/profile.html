@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}s
+{% block content %}
+
+{% if profile %}
+
+<h1 style="color:deeppink">{{ profile.user.first_name }}'s Profile</h1>
+<br/>
+
+
+<div class="card mb-3" style="width: 500px; height:150px ; border-radius: 500px;">
+   <div class="row g-0">
+     
+     <div class="col-md-4">
+       {% if profile.profile_image %}
+      <img src="{{ profile.profile_image.url }}" width=150 height=150 class="rounded-circle">
+      {% else %} 
+      <img src="{% static 'images/profile.jpg' %}" width=150 height=150 class="rounded-circle">	
+      {% endif %}  
+   </div>
+    
+     <div class="col-md-8">
+       <div class="card-body">
+         <h5 class="card-title" style="color: deeppink;">{{ profile.user.first_name }} {{ profile.user.last_name }}</h5>
+         <p class="card-text"><a style="text-decoration-line: none; color: green;" s href="{% url 'profile' profile.user.id %}">@{{ profile.user.username|lower }}</a></p>
+         <br/>
+         <p class="card-text"><small class="text-body-secondary">Last Modified: {{ profile.date_modified }}</small></p>
+       </div>
+     </div>
+   </div>
+ </div>
+
+            
+            <br/><br/>
+{% if twitts %}
+   {% for twitt in twitts %}
+   <div class="alert alert-secondary" style="border-radius: 100px; width: 500px; text-align: center;" role="alert">
+      {{ twitt.body }}
+      <br/>
+      {% if twitt.twitt_img %}
+      <img src ="{{ twitt.twitt_img.url }}" style="width: 100x; height:200px; border-radius: 20px;">
+       {% endif %}
+           <br/>
+      <small class="text-muted">
+           By <a style="text-decoration-line: none; color: deeppink;" s href="{% url 'profile' profile.user.id %}">@{{ twitt.user.username|lower }}</a>
+           
+           <br/> {{twitt.number_of_likes}} Likes
+           {% if user in twit.likes.all %}
+           <a href ="{% url 'twitt_like' twitt.id %}">Unlike</a>
+
+       {% else %}
+       
+           <a href ="{% url 'twitt_like' twitt.id %}">Like</a>
+       {% endif %}
+       <br/>
+       ({{ twitt.created_at }})
+         
+      </small>
+     
+  </div><br/>
+
+   {% endfor %}
+{% endif %}
+
+<div style="position:absolute; top:180px; left:700px">
+ 
+<strong style="color: green;">Follows</strong></br>
+{% for following in profile.follows.all %}
+   <a style="text-decoration-line:none; color: deeppink;" href="{% url 'profile' following.user.id %}"> @{{ following }}</a><br/>
+
+{% endfor %}
+
+
+<strong style="color: green;">Followed By</strong></br>
+{% for following in profile.followed_by.all %}
+   <a style="text-decoration-line:none; color: deeppink" href="{% url 'profile' following.user.id %}"> @{{ following }}</a><br/>
+
+{% endfor %}
+
+<br/>
+<form method = POST>
+{% csrf_token %}
+{% if profile in user.profile.follows.all %}
+   <button class = "btn btn-outline-danger" name = "follow" style="border-radius: 500px;" value = "unfollow" 
+   type = "submit"> Unfollow @{{ profile.user.username|lower }}
+   </button>
+
+{% else %}
+
+   <button class = "btn btn-outline-success" name = "follow" style="border-radius: 500px;" value = "follow" 
+   type = "submit"> Follow @{{ profile.user.username|lower }}
+   </button>
+
+{% endif %}
+
+</form>
+<br/>
+
+{% if request.user.id == profile.user.id %}
+		<a href="{% url 'update_user' %}" class="btn btn-outline-secondary" style="border-radius: 500px; width: 150px;">Update Profile</a>
+{% endif %}
+
+<br/>
+</div>
+
+{% endif %}
+
+
+{% endblock %}

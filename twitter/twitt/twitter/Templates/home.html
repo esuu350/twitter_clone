@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<div class="container text-right">
+    <div class = "row">
+        <div class = "col-8">
+
+
+<h1 style="color: aqua;">twitt!</h1>
+<br/>
+
+    {% for twitt in twitts %}
+
+        <div style="border-radius: 100px; width: 500px; text-align: center; background-color: transparent;">
+            
+           
+            <div class="col-md-18">         
+{% if twitt.user.profile.profile_image %}
+
+	<img src="{{ twitt.user.profile.profile_image.url }}" width=100 height=100 class="rounded-circle" alt="{{ profile.user.username }}">
+
+{% else %}
+<img src="{% static 'images/profile.jpg' %}" width=110 height=110 class="rounded-circle" alt="{{ profile.user.username }}">	
+    
+
+{% endif %}
+<br/>
+<h5 style="color: green;">{{ twitt.user.first_name }} {{ twitt.user.last_name }}</h5>
+</div>           
+
+<h8><a style="text-decoration-line: none; color: deeppink;" s href="{% url 'profile' twitt.user.id %}">@{{ twitt.user.username|lower }}</a></h8>
+<br/> 
+<h9>________________</h9>
+<br/>           
+{{ twitt.body }}<br/>
+            <small class="text-muted">
+               
+                 <br/>
+            {% if twitt.twitt_img %}
+           <img src ="{{ twitt.twitt_img.url }}" style="width: 100x; height:200px; border-radius: 20px;">
+            {% endif %}
+                <br/>
+                
+            {{twitt.number_of_likes}} Likes 
+            
+        {% if user in twit.likes.all %}
+            <a href ="{% url 'twitt_like' twitt.id %}">Unlike</a>
+
+        {% else %}
+        
+            <a href ="{% url 'twitt_like' twitt.id %}">Like</a>
+        {% endif %}
+        <br/>
+        ({{ twitt.created_at }})
+        <h4 style="color: deeppink;">_____________________________________________________</h4>
+            </small>
+           
+        </div>
+      
+        <br/>
+       
+
+    {% endfor %}
+</div>
+
+<div class ="col-4">
+        <br/>
+
+    {% if form %}
+    <form method="POST" method = POST enctype="multipart/form-data">
+        {% csrf_token %} 
+        {{ form.as_p }}
+
+    <button type="submit" class="btn btn-secondary" 
+    style="border-radius:250px; background-color: aqua; width: 300px;">twitt</button>
+  
+      </form>
+      {% endif %} 
+    
+
+</div>
+{% endblock %}
